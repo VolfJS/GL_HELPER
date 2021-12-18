@@ -11,6 +11,7 @@ const {
 const fs = require("fs")
 const config = require("./config")
 const { format } = require("fecha")
+const express = require("express")
 
 const generate_link = require('./pay_link')
 
@@ -45,6 +46,39 @@ setTimeout(() => {
     reg = [];
     console.log('clear success')
    }, 60000 * 2)
+
+   // --------------- Обработка запросов на сервер ------------------ \\
+   const app = express()
+   app.use(bodyParser.urlencoded({ extended: false }));  
+
+   app.post('/', async (req) => {
+    try {
+    console.log(req)
+console.log(JSON.stringify(req.body))
+
+let val = {
+amount: Number(req.body.amount),
+tgId: req.body.label
+} 
+
+if(val.amount > 1) {
+    let user = await Users.get_sel_one(`where "tgId" = ${val.tgId}`)
+
+    bot.telegram.sendMessage(val.tgId, `🎉 Произошла успешная оплата.\n💸 Ваш баланс был пополнен на ${val.amount} RUB.`)
+    bot.telegram.sendMessage(config.admins[0], `📢 Поступил новый платеж от ${HTML.url('пользователя', `tg://user?id=${val.tgId}`)} на сумму ${val.amount} РУБ.`)
+
+    await db.query(`UPDATE users SET balance = ${user.balance + Number(val.amount)} WHERE "tgId" = ${val.tgId}`)
+}
+
+console.log(val);
+} catch (e) {
+  console.error(e)
+}
+}) 
+
+app.listen(9090);
+
+   // ------------------------------------------------------------------- \\
    
    // ------------------- Обработка события клавиатуры ---------------- \\
 
@@ -104,6 +138,7 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
               name: ctx.from.first_name,
               group_name: "not_found",
               spam_messages: 0,
+              balance: 0,
               ban: false,
               admin: false,
               role: 1,
@@ -159,6 +194,7 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
 
 // ------------------------ команды через / --------------------- //
 bot.hears(/\/help|start/, help);
+bot.hears(/\/admin/, admin);
 // bot.hears(/\/support/, support);
 
 // ================================================= \\
