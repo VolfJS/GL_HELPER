@@ -9,4 +9,12 @@ const Users = new table_db({
     table_name: "users"
 })
 
-module.exports = { db, Users }
+const Donates = new table_db({
+    table_name: "donates"
+})
+
+module.exports = { 
+    db,
+    Users,
+    Donates 
+}
