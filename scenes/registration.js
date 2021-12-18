@@ -80,39 +80,39 @@ const registration = new Scenes.WizardScene(
             [
                 {
                     text: '2 ПИ',
-                    callback_data: '2_pi'
+                    callback_data: '2pi'
                 },
                 {
                   text: '3 ПИ',
-                  callback_data: '3_pi'
+                  callback_data: '3pi'
                 },
                 {
                     text: '4 ПИ',
-                    callback_data: '4_pi'
+                    callback_data: '4pi'
                   }
               ],
               [
                   {
                       text: "1 ИСИП",
-                      callback_data: '1_isip'
+                      callback_data: '1isip'
                   }
               ],
               [
                 {
                     text: "1 ФК",
-                    callback_data: '1_fk'
+                    callback_data: '1fk'
                 },
                 {
                     text: "2 ФК",
-                    callback_data: '2_fk'
+                    callback_data: '2fk'
                 },
                 {
                     text: "3 ФК",
-                    callback_data: '3_fk'
+                    callback_data: '3fk'
                 },
                 {
                     text: "4 ФК",
-                    callback_data: '4_fk'
+                    callback_data: '4fk'
                 }
             ]
             ]
@@ -130,39 +130,39 @@ const registration = new Scenes.WizardScene(
             [
                 {
                     text: '2 ПИ',
-                    callback_data: '2_pi'
+                    callback_data: '2pi'
                 },
                 {
                   text: '3 ПИ',
-                  callback_data: '3_pi'
+                  callback_data: '3pi'
                 },
                 {
                     text: '4 ПИ',
-                    callback_data: '4_pi'
+                    callback_data: '4pi'
                   }
               ],
               [
                   {
                       text: "1 ИСИП",
-                      callback_data: '1_isip'
+                      callback_data: '1isip'
                   }
               ],
               [
                 {
                     text: "1 ФК",
-                    callback_data: '1_fk'
+                    callback_data: '1fk'
                 },
                 {
                     text: "2 ФК",
-                    callback_data: '2_fk'
+                    callback_data: '2fk'
                 },
                 {
                     text: "3 ФК",
-                    callback_data: '3_fk'
+                    callback_data: '3fk'
                 },
                 {
                     text: "4 ФК",
-                    callback_data: '4_fk'
+                    callback_data: '4fk'
                 }
             ]
             ]
@@ -243,7 +243,7 @@ const registration = new Scenes.WizardScene(
                 ]
         }
     })
-    await db.query(`UPDATE users SET group_name = ${ctx.callbackQuery.data}, name = ${ctx.scene.state.name} WHERE "tgId" = ${ctx.from.id}`)
+    await db.query(`UPDATE users SET group_name = '${ctx.callbackQuery.data}', name = '${ctx.scene.state.name}' WHERE "tgId" = ${ctx.from.id}`)
 } else if(ctx.scene.state.role == 2) {
     await ctx.editMessageText(`<b>✨ Вы успешно прошли регистрацию</b>\n🗒 Главное меню:`, {
         parse_mode: "HTML",
@@ -278,7 +278,7 @@ const registration = new Scenes.WizardScene(
                 ]
         }
     })
-    await db.query(`UPDATE users SET group_name = ${ctx.callbackQuery.data}, name = ${ctx.scene.state.name}, role = 2 WHERE "tgId" = ${ctx.from.id}`)
+    await db.query(`UPDATE users SET group_name = '${ctx.callbackQuery.data}', name = '${ctx.scene.state.name}', role = 2 WHERE "tgId" = ${ctx.from.id}`)
 }
       return ctx.scene.leave();
     },
