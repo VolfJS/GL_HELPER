@@ -2,11 +2,10 @@ const { Telegraf } = require("telegraf")
 const config = require("./config")
 const { startBot } = require("./bot")
 
+console.log(config.bot_token)
 const bot = new Telegraf(config.bot_token)
 
-startBot().
-then(console.log("BOT_START")).
-catch(err => { console.log(`ERR STARTED:\n${err}`) })
+startBot()
 
 process.once('SIGINT', () => bot.stop('SIGINT'))
 process.once('SIGTERM', () => bot.stop('SIGTERM'))

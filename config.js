@@ -4,8 +4,8 @@ const config = {
     admins: [ 1173871498 ], // id админов бота
     spam_number: 40, // количество сообщений для включения антиспама
     login_db: 'postgres', // логин от базы данных postgres
-    password_db: 'Wolfjs1337', // пароль от базы данных postgres
-    dir_log: '/home/GL_HELPER/dist/logs' // директория для логов
+    password_db: 'Sergeydev2019', // пароль от базы данных postgres
+    dir_log: './logs' // директория для логов
 }
 
-module.export = config;
+module.exports = config;
