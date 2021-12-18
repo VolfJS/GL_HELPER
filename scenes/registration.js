@@ -184,7 +184,7 @@ const registration = new Scenes.WizardScene(
 
     async (ctx) => {
         if (!ctx.callbackQuery) return ctx.wizard.back();
-        if(ctx.callbackQuery.data = 'req_admin') {
+        if(ctx.callbackQuery.data == 'req_admin') {
             await ctx.telegram.sendMessage(config.admin_chat, `[ЗАЯВКА] Возможный администратор!
 👤 Пользователь: ${HTML.url('ссылка', `tg://user?id=${ctx.from.id}`)}
 ℹ️ Имя: ${ctx.scene.state.name}
@@ -209,7 +209,7 @@ const registration = new Scenes.WizardScene(
             })
             await ctx.editMessageText(`<b>📩 Ваша заявка на регистрацию была отправлена в специальный чат.</b>\n<i>📢 Когда разработчик приймет решение мы вас уведомим.</i>`, { parse_mode: "HTML" })
             return ctx.scene.leave()
-        } else if(ctx.callbackQuery.data = 'no_req_admin') {
+        } else if(ctx.callbackQuery.data == 'no_req_admin') {
             await ctx.editMessageText(`❗️ Теперь для того, чтобы завершить регистрацию, вы должны будете пройти её заново.\nКак будете готовы, просто напишите /start в данный чат.`)
             return ctx.scene.leave()
         }
