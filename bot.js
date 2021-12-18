@@ -17,6 +17,7 @@ const generate_link = require('./pay_link')
 
 // export all comands 
 const help = require("./commands/help")
+const admin = require("./commands/admin")
 // const support = require("./commands/support")
 // const start_menu = require("./commands/start_menu")
 // ------------------------------------------------- \\
