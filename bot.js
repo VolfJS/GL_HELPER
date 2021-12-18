@@ -12,6 +12,8 @@ const fs = require("fs")
 const config = require("./config")
 const { format } = require("fecha")
 
+const generate_link = require('./pay_link')
+
 // export all comands 
 const help = require("./commands/help")
 // const support = require("./commands/support")
@@ -20,6 +22,7 @@ const help = require("./commands/help")
 
 // scenes
 const registration = require("./scenes/registration")
+const up_balance = require("./scenes/up_balance")
 // ----------------------------------------------- \\
 
 const sender = require("telegraf-sender")
@@ -29,7 +32,7 @@ const { Keyboard } = require("telegram-keyboard")
 
 const bot = new Telegraf(config.bot_token)
 
-const stage = new Scenes.Stage([registration]);
+const stage = new Scenes.Stage([registration, up_balance]);
 
 bot.use(session()); 
 bot.use(stage.middleware());
@@ -110,7 +113,7 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
         await ctx.replyWithHTML(`🧑‍🏫 Приветствую тебя, <code>${ctx.from.first_name}</code>!
 <i>📢 Для начала вы должны отправить заявку на рассмотрение!</i>
 ➖➖➖➖➖➖➖➖➖➖➖➖
-<b>❓ Приступим?</b>`)
+<b>❓ Приступим.</b>`)
         setTimeout(() => {
             return ctx.scene.enter('registration')
         }, 500)
