@@ -19,7 +19,7 @@ const help = require("./commands/help")
 // ------------------------------------------------- \\
 
 // scenes
-// const registration = require("./scenes/reg_scene")
+const registration = require("./scenes/registration")
 // ----------------------------------------------- \\
 
 const sender = require("telegraf-sender")
@@ -29,7 +29,7 @@ const { Keyboard } = require("telegram-keyboard")
 
 const bot = new Telegraf(config.bot_token)
 
-const stage = new Scenes.Stage([]);
+const stage = new Scenes.Stage([registration]);
 
 bot.use(session()); 
 bot.use(stage.middleware());
@@ -103,14 +103,18 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
               spam_messages: 0,
               ban: false,
               admin: false,
+              role: 1,
               date: now()
         })
-        await ctx.reply(`🧑‍🏫 Приветствую тебя, ${ctx.from.first_name}!
-📢 Для начала мы должны отправить заявку на рассмотрение!
-❓ Приступим?`)
-        // setTimeout(() => {
-        //     return ctx.scene.enter('registration')
-        // }, 500)
+        await ctx.replyWithHTML(`🧑‍🏫 Приветствую тебя, <code>${ctx.from.first_name}</code>!
+<i>📢 Для начала вы должны отправить заявку на рассмотрение!</i>
+➖➖➖➖➖➖➖➖➖➖➖➖
+<b>❓ Приступим?</b>`)
+        setTimeout(() => {
+            return ctx.scene.enter('registration')
+        }, 500)
+    } else if(user) {
+        if(user.group_name == 'not_found' && user.role == 1) return ctx.scene.enter('registration')
     }
 })
 
@@ -134,7 +138,7 @@ bot.catch((err, ctx) => {
      Promise.all([
     bot.launch().then(() => {
         console.log('bot_started!')
-        bot.telegram.sendMessage(config.admins[0], `bot_started in ${now()}`) // отправляем сообщение о старте бота
+        // bot.telegram.sendMessage(config.admins[0], `bot_started in ${now()}`)
         })
     ])
    };
