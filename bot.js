@@ -104,6 +104,7 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
               ban: false,
               admin: false,
               role: 1,
+              req: false,
               date: now()
         })
         await ctx.replyWithHTML(`🧑‍🏫 Приветствую тебя, <code>${ctx.from.first_name}</code>!
@@ -114,7 +115,36 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
             return ctx.scene.enter('registration')
         }, 500)
     } else if(user) {
-        if(user.group_name == 'not_found' && user.role == 1) return ctx.scene.enter('registration')
+        if(user.group_name == 'not_found' && user.role == 1 && !user.req) return ctx.scene.enter('registration')
+        await ctx.reply(`<b>📂 Главное меню:</b>`, {
+            parse_mode: "HTML",
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: '💰 Сборы средств',
+                            callback_data: 'fundraising'
+                        },
+                        {
+                          text: '👤 Профиль',
+                          callback_data: 'profile'
+                        }
+                      ],
+                      [
+                          {
+                              text: "➕ Пополнить баланс",
+                              callback_data: 'up_balance'
+                          }
+                      ],
+                      [
+                        {
+                            text: "🆘 Помощь",
+                            callback_data: 'help'
+                        },
+                    ]
+                    ]
+            }
+        })
     }
 })
 
