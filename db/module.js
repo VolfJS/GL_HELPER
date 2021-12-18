@@ -24,7 +24,7 @@ function isLowerCase(str)  // функция для определения ре�
 }
 
 const SQL = {
-	list: ['tgId', 'id', 'name', 'country', 'vip', 'date'],
+	list: ['tgId', 'id', 'name', 'group_name', 'spam_messages', 'ban', 'admin', 'role', 'date'],
 	sel_list: async(sql, number)=>{
 		let res = await client.query('select '+sql);
 		if(number) {
