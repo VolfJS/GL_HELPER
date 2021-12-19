@@ -1,38 +1,24 @@
 const { Scenes } = require("telegraf")
 const { Keyboard, Key } = require("telegram-keyboard")
-const generate_link = require('../pay_link')
+const fs = require('fs')
+const botinfo = require("../../GL_HELPER/botinfo.json")
 
-const up_balance = new Scenes.WizardScene(
-    'up_balance',
+const edit_id_project = new Scenes.WizardScene(
+    'edit_id_project',
     async (ctx) => {
         let back_keyb = Keyboard.make([
             Key.callback('❌ Отмена', 'menu')
           ]).inline()
-      await ctx.editMessageText(`💸 Введите сумму пополнения (RUB):`, back_keyb);
+      await ctx.editMessageText(`🆔 Введите новый id проекта:`, back_keyb);
       return ctx.wizard.next();
     },
     async (ctx) => {
         if(!ctx.callbackQuery) {
             ctx.message.text = Number(ctx.message.text)
-            if(!Number(ctx.message.text) || ctx.message.text < 1) return ctx.replyWithHTML(`<b>❌ Сумма не может быть меньше 30 рублей и должна быть числом!</b>`) 
-            let link = generate_link({
-                amount: Number(ctx.message.text),
-                desc: ctx.from.id,
-                method: "none"
-            })
-            await ctx.reply(`<i>💳 Вы можете пополнить ваш баланс по ссылке ниже или кнопке.</i>\n🔗 Ссылка: ${link}`, {
-              parse_mode: "HTML",
-              reply_markup: {
-                  inline_keyboard: [
-                      [
-                          {
-                              text: '📲 Оплатить',
-                              url: link
-                          },
-                      ]
-                      ]
-              }
-          })
+            if(!Number(ctx.message.text) || ctx.message.text < 30) return ctx.replyWithHTML(`<b>❌ ID не может быть меньше 1 и должен быть числом!</b>`) 
+            botinfo.api_project_id = ctx.message.text
+            fs.writeFileSync("./botinfo.json", JSON.stringify(botinfo, null, "\t")); // обновление JSON файлика
+          await ctx.reply(`✅ ID проекта был успешно изменён`)
           await ctx.reply(`🗒 Главное меню:`, {
               parse_mode: "HTML",
               reply_markup: {
@@ -107,4 +93,4 @@ const up_balance = new Scenes.WizardScene(
     },
 )
 
-module.exports = up_balance
+module.exports = edit_id_project

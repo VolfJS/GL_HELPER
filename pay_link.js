@@ -15,9 +15,9 @@ function generate_link(params = {}) {
    let link;
    let rand_num = randomInteger(1, 10000000)
  
-   let hash = md5(`${this.amount}|${rand_num}|378|RUB|${this.desc}|123`)
+   let hash = md5(`${this.amount}|${rand_num}|738|RUB|${this.desc}|token_proekta`)
  
-   this.method == 'none' ? link = `https://payok.io/pay?amount=${this.amount}&payment=${rand_num}&shop=378&desc=${this.desc}&currency=RUB&sign=${hash}` : link = `https://payok.io/pay?amount=${this.amount}&payment=1&shop=${config.shop_id}&desc=${this.desc}&currency=RUB&sign=${hash}&method=${this.method}`
+   this.method == 'none' ? link = `https://payok.io/pay?amount=${this.amount}&payment=${rand_num}&shop=738&desc=${this.desc}&currency=RUB&sign=${hash}` : link = `https://payok.io/pay?amount=${this.amount}&payment=1&shop=${config.shop_id}&desc=${this.desc}&currency=RUB&sign=${hash}&method=${this.method}`
  
    return link;
 }   

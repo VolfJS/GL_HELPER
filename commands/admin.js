@@ -11,9 +11,6 @@ async function admin(ctx) {
             Key.callback('👥 Статистика проекта', 'project_stats'),
         ],
         [
-            Key.callback('🔎 Найти пользователя', 'find_user'),
-        ],
-        [
             Key.callback('🔗 Изменить ключ для оплаты', 'edit_api_key'),
         ],
         [

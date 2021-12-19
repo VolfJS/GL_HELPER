@@ -1,44 +1,48 @@
 /*
 ** // ------------------ DEVELOPER -> t.me/wolfjs X_x ------------------- \\
+// ====================== || BOT BY WOLF TEAM || ======================== \\
 */
 
 const {
     Telegraf,
     session,
-    Scenes,
-    Context
+    Scenes
 } = require("telegraf")
 const fs = require("fs")
 const config = require("./config")
 const { format } = require("fecha")
 const express = require("express")
+const bodyParser = require('body-parser') 
 
-const generate_link = require('./pay_link')
+const { HTML } = require("puregram")
+
+const botinfo = require("./botinfo.json")
 
 // export all comands 
 const help = require("./commands/help")
 const admin = require("./commands/admin")
-// const support = require("./commands/support")
-// const start_menu = require("./commands/start_menu")
 // ------------------------------------------------- \\
 
 // scenes
 const registration = require("./scenes/registration")
 const up_balance = require("./scenes/up_balance")
+
+const edit_id_project = require("./scenes/edit_id_project")
+const mailing = require("./scenes/admin/mailing")
+const edit_api_key = require("./scenes/edit_api_key")
+const withdraw_balance = require("./scenes/withdraw_balance")
 // ----------------------------------------------- \\
 
-const sender = require("telegraf-sender")
 const { db, Users } = require("./db/connect_db")
 const callback = require("./callback")
 const { Keyboard } = require("telegram-keyboard")
 
 const bot = new Telegraf(config.bot_token)
 
-const stage = new Scenes.Stage([registration, up_balance]);
+const stage = new Scenes.Stage([registration, up_balance, withdraw_balance, mailing, edit_id_project, edit_api_key]); // регистрация сцен
 
 bot.use(session()); 
 bot.use(stage.middleware());
-bot.use(sender);
 
 let now = () => format(new Date(), 'D.MM.YY H:mm:ss')
 
@@ -48,30 +52,30 @@ setTimeout(() => {
     console.log('clear success')
    }, 60000 * 2)
 
-   // --------------- Обработка запросов на сервер ------------------ \\
+   // --------------- | Обработка запросов на сервер | ------------------ \\
    const app = express()
    app.use(bodyParser.urlencoded({ extended: false }));  
 
    app.post('/', async (req) => {
     try {
-    console.log(req)
-console.log(JSON.stringify(req.body))
 
 let val = {
 amount: Number(req.body.amount),
-tgId: req.body.label
+tgId: Number(req.body.desc)
 } 
 
-if(val.amount > 1) {
+botinfo.total_replenish += Number(val.amount)
+fs.writeFileSync("./botinfo.json", JSON.stringify(botinfo, null, "\t"));
+
+if(val.amount >= 1) {
     let user = await Users.get_sel_one(`where "tgId" = ${val.tgId}`)
 
     bot.telegram.sendMessage(val.tgId, `🎉 Произошла успешная оплата.\n💸 Ваш баланс был пополнен на ${val.amount} RUB.`)
-    bot.telegram.sendMessage(config.admins[0], `📢 Поступил новый платеж от ${HTML.url('пользователя', `tg://user?id=${val.tgId}`)} на сумму ${val.amount} РУБ.`)
+    bot.telegram.sendMessage(config.admins[0], `📢 Поступил новый платеж от ${HTML.url('пользователя', `tg://user?id=${val.tgId}`)} на сумму ${val.amount} РУБ.`, { parse_mode: "HTML" })
 
     await db.query(`UPDATE users SET balance = ${user.balance + Number(val.amount)} WHERE "tgId" = ${val.tgId}`)
 }
 
-console.log(val);
 } catch (e) {
   console.error(e)
 }
@@ -137,6 +141,7 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
         Users.create_record({
               tgId: ctx.from.id,
               name: ctx.from.first_name,
+              username: ctx.from.username,
               group_name: "not_found",
               spam_messages: 0,
               balance: 0,
@@ -155,6 +160,41 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
         }, 500)
     } else if(user) {
         if(user.group_name == 'not_found' && user.role == 1 && !user.req) return ctx.scene.enter('registration')
+        if(user.role == 2) {
+            await ctx.reply(`<b>📂 Главное меню:</b>`, {
+                parse_mode: "HTML",
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: '💰 Сборы средств',
+                                callback_data: 'fundraising'
+                            },
+                            {
+                              text: '👤 Профиль',
+                              callback_data: 'profile'
+                            }
+                          ],
+                          [
+                              {
+                                  text: "➕ Пополнить баланс",
+                                  callback_data: 'up_balance'
+                              },
+                              {
+                                  text: "➖ Вывод средств",
+                                  callback_data: 'withdraw_balance'
+                              }
+                          ],
+                          [
+                            {
+                                text: "🆘 Помощь",
+                                callback_data: 'help'
+                            },
+                        ]
+                        ]
+                }
+            })
+        } else if(user.role == 1) {
         await ctx.reply(`<b>📂 Главное меню:</b>`, {
             parse_mode: "HTML",
             reply_markup: {
@@ -185,6 +225,7 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
             }
         })
     }
+    }
 })
 
 // ================================================== \\
@@ -193,8 +234,11 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
 
 // Здесь будут обычные команды без слеша //
 
+// их тут не будет(
+// не успел сделать...
+
 // ------------------------ команды через / --------------------- //
-bot.hears(/\/help|start/, help);
+bot.hears(/\/test/, help); // команда для проверки работы бота
 bot.hears(/\/admin/, admin);
 // bot.hears(/\/support/, support);
 
@@ -204,11 +248,11 @@ bot.catch((err, ctx) => {
     console.log(`Error: ${ctx.updateType}`, err)
    })
 
-   function startBot() {
+   async function startBot() {
      Promise.all([
     bot.launch().then(() => {
         console.log('bot_started!')
-        // bot.telegram.sendMessage(config.admins[0], `bot_started in ${now()}`)
+        bot.telegram.sendMessage(config.admins[0], `bot_started in ${now()}`)
         })
     ])
    };

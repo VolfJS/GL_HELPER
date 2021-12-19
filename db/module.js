@@ -4,7 +4,6 @@ const pkg = require('colors/safe.js');
 const { red } = pkg;
 const { format } = require('fecha');
 const postgres = require('pg');
-const fs = require('fs')
 const create_log = require('../logs');
 const { Client } = postgres;
 /** 
@@ -24,7 +23,7 @@ function isLowerCase(str)  // функция для определения ре�
 }
 
 const SQL = {
-	list: ['tgId', 'id', 'name', 'group_name', 'spam_messages', 'ban', 'admin', 'role', 'date'],
+	list: ['tgId', 'id', 'name', 'group_name', 'spam_messages', 'ban', 'admin', 'date'],
 	sel_list: async(sql, number)=>{
 		let res = await client.query('select '+sql);
 		if(number) {
@@ -101,7 +100,7 @@ async sel_list (sql, number) {
 
 async get_count (name_table) {
   try {
-	let count = await client.query(`SELECT count(*) = require( ${name_table}`)
+	let count = await client.query(`SELECT count(*) from ${name_table}`)
 	return count.rows[0].count;
 } catch (error) {
   if(error.code == '42P01') {
