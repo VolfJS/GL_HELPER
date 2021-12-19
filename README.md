@@ -5,15 +5,17 @@
 # Документация для запуска бота 
 ## OC - Linux (Ubuntu 18.04 например)
 ### Загрузка node.js и зависимостей
->sudo apt-get update
+><code>sudo apt-get update</code>
 
->sudo apt-get install curl
+><code>sudo apt-get install curl</code>
 
->curl -sL https://deb.nodesource.com/setup_15.x -o nodesource_setup.sh
+><code>curl -sL https://deb.nodesource.com/setup_15.x -o nodesource_setup.sh</code>
 
->sudo bash nodesource_setup.sh
+><code>sudo bash nodesource_setup.sh</code>
 
->sudo apt install nodejs
+><code>sudo apt install nodejs</code>
+
+><code>npm i pm2 -g</code>
 
 ### Загрузка Apache2 
 ><code>sudo apt install apache2</code>
@@ -34,4 +36,20 @@
 
 >>*пишем свой пароль*
 
-### Загрузка PostgreSQL
+><code>\q</code>
+
+---
+
+### На следующем этапе мы должны загрузить папку с ботом в директорию на сервере.
+### После того, как загрузили, нужно установить все библиотеки:
+><code>npm i</code>
+
+### Запуск бота после настроек сервера
+><code>cd *директория*</code>
+
+><code>pm2 start index.js</code>
+
+### Проверка логов и остановка бота
+><code>pm2 log</code> - посмотреть логи бота
+
+><code>pm2 status</code> - посмотреть запущенные процессы pm2
