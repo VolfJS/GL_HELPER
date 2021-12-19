@@ -16,17 +16,22 @@
 >sudo apt install nodejs
 
 ### Загрузка Apache2 
->sudo apt install apache2
+><code>sudo apt install apache2</code>
 
->sudo ufw allow 'Apache'
+><code>sudo ufw allow 'Apache'</code>
 
-### Загрузка phppgadmin для работы с БД
->sudo apt install phppgadmin
+### Загрузка PostgreSQL
+><code>sudo apt install postgresql postgresql-contrib</code>
 
->su - postgres
+### Загрузка phppgadmin для работы с БД и установка пароля
+><code>sudo apt install phppgadmin</code>
 
->psql
+><code>su - postgres</code>
 
->\password postgres
+><code>psql</code>
+
+><code>\password postgres</code>
 
 >>*пишем свой пароль*
+
+### Загрузка PostgreSQL
