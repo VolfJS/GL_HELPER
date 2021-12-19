@@ -1,5 +1,7 @@
 const { Scenes } = require("telegraf")
-const { Users, Donates } = require("../db/connect_db")
+const { Keyboard, Key } = require("telegram-keyboard")
+const { db, Users, Donates } = require("../db/connect_db")
+const generate_link = require('../pay_link')
 const { format } = require("fecha")
 
 let now = () => format(new Date(), 'D.MM.YY H:mm:ss')
@@ -40,9 +42,9 @@ const add_fund = new Scenes.WizardScene(
             sum_one_user: Number(ctx.scene.state.one_user), 
             sum_collected: 0,
             date_start: 0,
-            date_end: 0,
+            date_end: ctx.message.text,
             users: {},
-            group: user.group_name,
+            group_name: user.group_name,
             date_created: now()
       })
         await ctx.reply(`✅ Сбор средств был успешно создан.`)

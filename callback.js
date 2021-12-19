@@ -1,13 +1,14 @@
-const { db, Users, Donates } = require("./db/connect_db")
+const { db, Users } = require("./db/connect_db")
 const botinfo = require("./botinfo.json")
 
 async function callback(ctx) {
     // команды
     switch (ctx.update.callback_query.data) {
       case "fundraising":
+        
         let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
         if(user.role == 2) {
-        await ctx.editMessageText(`У вас пока нет ни одного сбора средств.`, {
+        await ctx.editMessageText(`Вы староста и можете добавлять новые сборы средств.`, {
           parse_mode: "HTML",
           reply_markup: {
               inline_keyboard: [
@@ -27,9 +28,9 @@ async function callback(ctx) {
           }
       })
     } else if(user.role == 1) {
-      let all_donates = db.query(`SELECT * FROM donates`)
-      
-      all_donates.filter(x => x.group == user.group_name).map(async x => {
+      let all_donates = await db.sel_list(`* from donates`)
+      try {
+      all_donates.filter(x => x.group_name == user.group_name).map(async x => {
         if(!x) await ctx.editMessageText(`У вас пока нет ни одного сбора средств.`, {
           parse_mode: "HTML",
           reply_markup: {
@@ -45,6 +46,22 @@ async function callback(ctx) {
       })
         await ctx.reply(`ID сбора: ${x.id}\nНазвание сбора: ${x.name_donates}\nСумма сбора: ${x.all_sum}\nВы должны заплатить: ${x.sum_one_user}\nДата окончания сбора: через ${x.date_end} дней`)
       })
+    } catch (e) {
+      console.error(e)
+      await ctx.editMessageText(`У вас пока нет ни одного сбора средств.`, {
+        parse_mode: "HTML",
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    {
+                        text: '🔙 Назад',
+                        callback_data: 'menu'
+                    }
+                  ]
+                ]
+        }
+    })
+    }
 
     }
       break;
