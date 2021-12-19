@@ -86,7 +86,6 @@ async function callback(ctx) {
       break;
 
       case "profile":
-        let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
         await ctx.editMessageText(`🆔 ID: <code>${user.id}</code>\n🏷 Имя: <i>${user.name}</i>\n👥 Группа: <b>${user.group_name == '2pi' ? `2 ПИ` : user.group_name == '3pi' ? `3 ПИ` : user.group_name == '4pi' ? `4 ПИ` : user.group_name == '1fk' ? `1 ФК` : user.group_name == '2fk' ? `2 ФК` : user.group_name == '3fk' ? `3 ФК` : user.group_name == '4fk' ? `4 ФК` : `1 ИсИП`}</b>\n🚹 Роль: ${user.role == 1 ? `студент` : user.role == 2 ? `староста группы` : `администрация`}\n💰 Баланс: ${user.balance} RUB\n\n📆 Дата регистрации: <code>${user.date}</code>`, {
           parse_mode: "HTML",
           reply_markup: {

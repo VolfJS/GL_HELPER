@@ -1,5 +1,5 @@
 const { Scenes } = require("telegraf")
-const { Users, Donates } = require("./db/connect_db")
+const { Users, Donates } = require("../db/connect_db")
 const { format } = require("fecha")
 
 let now = () => format(new Date(), 'D.MM.YY H:mm:ss')
