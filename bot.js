@@ -16,8 +16,6 @@ const bodyParser = require('body-parser')
 
 const { HTML } = require("puregram")
 
-const botinfo = require("./botinfo.json")
-
 // export all comands 
 const help = require("./commands/help")
 const admin = require("./commands/admin")
@@ -28,6 +26,7 @@ const registration = require("./scenes/registration")
 const up_balance = require("./scenes/up_balance")
 
 const edit_id_project = require("./scenes/edit_id_project")
+const add_fund = require("./scenes/add_fund")
 const mailing = require("./scenes/admin/mailing")
 const edit_api_key = require("./scenes/edit_api_key")
 const withdraw_balance = require("./scenes/withdraw_balance")
@@ -35,11 +34,10 @@ const withdraw_balance = require("./scenes/withdraw_balance")
 
 const { db, Users } = require("./db/connect_db")
 const callback = require("./callback")
-const { Keyboard } = require("telegram-keyboard")
 
 const bot = new Telegraf(config.bot_token)
 
-const stage = new Scenes.Stage([registration, up_balance, withdraw_balance, mailing, edit_id_project, edit_api_key]); // регистрация сцен
+const stage = new Scenes.Stage([registration, up_balance, withdraw_balance, mailing, edit_id_project, edit_api_key, add_fund]); // регистрация сцен
 
 bot.use(session()); 
 bot.use(stage.middleware());
@@ -58,14 +56,13 @@ setTimeout(() => {
 
    app.post('/', async (req) => {
     try {
+    // console.log(req)
+console.log(JSON.stringify(req.body))
 
 let val = {
 amount: Number(req.body.amount),
 tgId: Number(req.body.desc)
 } 
-
-botinfo.total_replenish += Number(val.amount)
-fs.writeFileSync("./botinfo.json", JSON.stringify(botinfo, null, "\t"));
 
 if(val.amount >= 1) {
     let user = await Users.get_sel_one(`where "tgId" = ${val.tgId}`)
@@ -76,6 +73,7 @@ if(val.amount >= 1) {
     await db.query(`UPDATE users SET balance = ${user.balance + Number(val.amount)} WHERE "tgId" = ${val.tgId}`)
 }
 
+console.log(val);
 } catch (e) {
   console.error(e)
 }
@@ -234,11 +232,8 @@ let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
 
 // Здесь будут обычные команды без слеша //
 
-// их тут не будет(
-// не успел сделать...
-
 // ------------------------ команды через / --------------------- //
-bot.hears(/\/test/, help); // команда для проверки работы бота
+bot.hears(/\/test/, help); // тестовая команда
 bot.hears(/\/admin/, admin);
 // bot.hears(/\/support/, support);
 

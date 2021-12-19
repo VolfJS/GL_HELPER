@@ -1,11 +1,36 @@
-const { db, Users } = require("./db/connect_db")
+const { db, Users, Donates } = require("./db/connect_db")
 const botinfo = require("./botinfo.json")
 
 async function callback(ctx) {
     // команды
     switch (ctx.update.callback_query.data) {
       case "fundraising":
+        let user = await Users.get_sel_one(`where "tgId" = ${ctx.from.id}`)
+        if(user.role == 2) {
         await ctx.editMessageText(`У вас пока нет ни одного сбора средств.`, {
+          parse_mode: "HTML",
+          reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '➕ Добавить сбор',
+                    callback_data: 'add_fund'
+                }
+                ],
+                  [
+                      {
+                          text: '🔙 Назад',
+                          callback_data: 'menu'
+                      }
+                    ]
+                  ]
+          }
+      })
+    } else if(user.role == 1) {
+      let all_donates = db.query(`SELECT * FROM donates`)
+      
+      all_donates.filter(x => x.group == user.group_name).map(async x => {
+        if(!x) await ctx.editMessageText(`У вас пока нет ни одного сбора средств.`, {
           parse_mode: "HTML",
           reply_markup: {
               inline_keyboard: [
@@ -18,6 +43,10 @@ async function callback(ctx) {
                   ]
           }
       })
+        await ctx.reply(`ID сбора: ${x.id}\nНазвание сбора: ${x.name_donates}\nСумма сбора: ${x.all_sum}\nВы должны заплатить: ${x.sum_one_user}\nДата окончания сбора: через ${x.date_end} дней`)
+      })
+
+    }
       break;
 
       case "menu":
@@ -111,6 +140,10 @@ async function callback(ctx) {
 
       case "edit_id_project":
       await ctx.scene.enter("edit_id_project")
+      break;
+
+      case "add_fund":
+      await ctx.scene.enter("add_fund")
       break;
     }
 }
